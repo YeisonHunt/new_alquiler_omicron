@@ -476,34 +476,58 @@
         });
     </script>
 
-    <script>
-        const form = document.querySelector('#formularioContacto');
+<script>
+    const form = document.querySelector('#formularioContacto');
+    const submitButton = document.getElementById('btnEnviar'); // Get the button
+    const originalButtonHTML = submitButton.innerHTML; // Store original HTML
 
-        const formEvent = form.addEventListener('submit', async event => {
-            event.preventDefault();
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
 
-            const fechas = document.querySelector('#fechas').value;
-            const nombres = document.querySelector('#nombres').value;
-            const apellidos = document.querySelector('#apellidos').value;
-            const correo = document.querySelector('#correo').value;
+        // --- Button Loading State ---
+        submitButton.disabled = true; // Disable button
+        // Assuming you have FontAwesome or similar icons included via Canvas CSS
+        // Use a spinner icon. Adjust 'icon-line-loader icon-spin' if your framework uses different classes
+        submitButton.innerHTML = '<i class="icon-line-loader icon-spin"></i> Procesando...';
 
-            const text = `Hola, me gustaría alquilar el equipo *OMICRON CMC356*, las fechas son: *${fechas}*, mi nombre es: *${nombres} ${apellidos}*, mi correo es: ${correo}`;
+        const fechas = document.querySelector('#fechas').value;
+        const nombres = document.querySelector('#nombres').value;
+        const apellidos = document.querySelector('#apellidos').value;
+        const correo = document.querySelector('#correo').value;
 
-            const encondedText = encodeURIComponent(text);
+        const text = `Hola, me gustaría alquilar el equipo *OMICRON CMC356*, las fechas son: *${fechas}*, mi nombre es: *${nombres} ${apellidos}*, mi correo es: ${correo}`;
+        const encodedText = encodeURIComponent(text);
 
-            Swal.fire({
-                type: 'success',
-                title: 'Excelente!',
-                text: correo + ' - Abriendo conversación de WhatsApp, por favor espere...',
-                showConfirmButton: false,
-                timer: 7000
-            });
-
-            setInterval(() => {
-                window.open('https://wa.me/573508192104?text=' + encondedText, '_blank');
-            }, 1500);
+        Swal.fire({
+            // Use 'icon' instead of 'type' for newer SweetAlert2 versions
+            icon: 'success', // Changed from type: 'success'
+            title: '¡Excelente!',
+            text: correo + ' - Abriendo conversación de WhatsApp, por favor espere...',
+            showConfirmButton: false,
+            timer: 7000, // Alert will auto-close
+            // Optional: Prevent closing by clicking outside or escape key while processing
+            allowOutsideClick: true,
+            allowEscapeKey: false
         });
-    </script>
+
+        // --- WhatsApp Redirect (after 1.5 seconds) ---
+        setTimeout(() => {
+            window.open('https://wa.me/573508192104?text=' + encodedText, '_blank');
+        }, 1500);
+
+        // --- Reset Button State (after 2 seconds) ---
+        setTimeout(() => {
+            submitButton.disabled = false; // Re-enable button
+            submitButton.innerHTML = originalButtonHTML; // Restore original HTML
+            // Optional: You might want to reset the form fields here as well
+            // form.reset();
+            // document.getElementById('precio').innerHTML = '# Escoger la fecha de inicio y fin para calcular los precios <br>';
+        }, 2000); // 2000 milliseconds = 2 seconds
+
+        // Note: The SweetAlert timer (7000ms) is independent of these timeouts.
+        // The button will reset after 2 seconds, even if the alert is still visible.
+    });
+</script>
 
     <script type="text/javascript">
         (function () {
